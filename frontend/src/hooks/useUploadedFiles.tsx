@@ -7,53 +7,48 @@ interface UploadedImage {
 
 function imgReducer(state: any, action: any) {
     switch (action.type) {
-        case "DROP_FILES": {
-            const dragEvent = action.data as DragEvent;
-            const dt = dragEvent.dataTransfer;
-            const files = dt!.files;
-
-            return files;
-        }
         case "UPLOAD_FILES": {
             [...(action.files as FileList)].forEach((file) => {
-                let formData = new FormData();
+                const formData = new FormData();
 
                 formData.append("file", file);
 
-                fetch(url, {
-                    method: "POST",
-                    body: formData,
-                })
-                    .then(() => {
-                        /* Done. Inform the user */
-                    })
-                    .catch(() => {
-                        /* Error. Inform the user */
-                    });
+                // fetch(url, {
+                //     method: "POST",
+                //     body: formData,
+                // })
+                //     .then(() => {
+                //         /* Done. Inform the user */
+                //     })
+                //     .catch(() => {
+                //         /* Error. Inform the user */
+                //     });
+                // Used with backend to upload files to server
             });
         }
     }
 }
 
 export default function useUploadedFiles(initialFiles: any) {
-    const [imgState, dispatch] = useReducer(imgReducer, {
-        ...initialFiles,
-    });
+    const [imgState, dispatch] = useReducer(imgReducer, { ...initialFiles });
 
-    const uploadHandler = useCallback((files: FileList) => {
+    // imgState:
+    // [
+    //     {
+    //         file: File,
+    //         dither: Boolean,
+    //         ditheredFile: File || undefined,
+    //     },
+    //     ...
+    // ];
+
+    const uploadHandler = useCallback((files?: FileList, data?: DragEvent) => {
         dispatch({
             type: "UPLOAD_FILES",
             files: files,
         });
-    });
-
-    const dropHandler = useCallback((data: DragEvent) => {
-        dispatch({
-            type: "DROP_FILES",
-            data: data,
-        });
-        dispatch({
-            type: "UPLOAD_FILES",
-        });
     }, []);
+
+    // TODO: handle converting drag uploads into FileLists   its too convoluted to try and handle this all in this module + i think i could also honestly just define it in its own file as well
+    // TODO: create const ditherHandler = useCallback(); // this function should accept the list of images as from uploadHandler and add the dithered images to imageState in the ditheredImage key
 }
