@@ -47,7 +47,7 @@ export default function FileUpload() {
                         />
                         <label
                             htmlFor="fileElem"
-                            className="font-bold text-blue-500 underline"
+                            className="font-bold text-blue-500 underline cursor-pointer"
                         >
                             browse!
                         </label>
