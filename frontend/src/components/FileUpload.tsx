@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import upload from "../assets/upload.png";
 import clsx from "clsx";
+import useUploadedFiles from "../hooks/useUploadedFiles";
 
-export default function FileUpload() {
+export default function FileUpload({
+    onUpload,
+}: {
+    onUpload: (files: FileList) => void;
+}) {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
 
     const dragAreaStyles = clsx({
@@ -23,6 +28,18 @@ export default function FileUpload() {
         setIsDraggedOver(false);
     }
 
+    const dropHandler = useCallback(
+        (e: DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const dt = e.dataTransfer;
+            const files = dt!.files;
+            console.log("what");
+            onUpload(files);
+        },
+        [onUpload]
+    );
+
     return (
         <div className="flex flex-col items-stretch w-full h-screen">
             <div
@@ -31,6 +48,10 @@ export default function FileUpload() {
                 onDragEnter={(e) => dragOverHandler(e as unknown as DragEvent)}
                 onDragOver={(e) => dragOverHandler(e as unknown as DragEvent)}
                 onDragLeave={(e) => dragLeaveHandler(e as unknown as DragEvent)}
+                onDrop={(e) => {
+                    dragLeaveHandler(e as unknown as DragEvent);
+                    dropHandler(e as unknown as DragEvent);
+                }} // TODO: something is rerendering which causes uploadHandler to run twice on the same inputs... peculiar
             >
                 <img src={upload} alt="upload" className="w-32 -m-4" />
                 <span className="flex flex-col *:-m-1 items-center">
