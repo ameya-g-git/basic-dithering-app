@@ -1,6 +1,6 @@
 import { debounce } from "lodash";
 import { nanoid } from "nanoid";
-import { ReactElement, useCallback, useReducer } from "react";
+import { act, ReactElement, useCallback, useReducer } from "react";
 
 interface UploadedImage {
     id: string;
@@ -16,6 +16,7 @@ interface Action {
 
 interface UploadAction extends Action {
     files: FileList;
+    src: string[];
 }
 
 interface SelectAction extends Action {
@@ -35,6 +36,7 @@ type UploadedFilesHookReturn = [
 async function previewFile(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
+        reader.readAsDataURL(file);
         reader.onloadend = function () {
             if (typeof reader.result === "string") {
                 resolve(reader.result);
@@ -45,11 +47,10 @@ async function previewFile(file: File): Promise<string> {
         reader.onerror = function () {
             reject(new Error("Error reading file"));
         };
-        reader.readAsDataURL(file);
     });
 }
 
-async function handleFile(file: File) {
+function handleFile(file: File) {
     const formData = new FormData(); // TODO: potentially not even needed with my current object interface
 
     formData.append("file", file);
@@ -62,14 +63,7 @@ async function handleFile(file: File) {
         ditheredImage: undefined,
     };
 
-    try {
-        const dataUrl = await previewFile(file);
-        image.srcElem = (
-            <img src={dataUrl} key={image.id} alt={image.img.name} />
-        );
-    } catch (error) {
-        console.error("Error generating preview", error);
-    }
+    console.log(image);
 
     return image;
 
@@ -92,11 +86,17 @@ function imgReducer(
 ) {
     switch (action.type) {
         case "UPLOAD_FILES": {
+            const uploadState = state as UploadedImage[];
             const uploadAction = action as UploadAction;
             const fileList: UploadedImage[] = [];
 
-            [...uploadAction.files].forEach(async (file) => {
-                const image = await handleFile(file);
+            [...uploadAction.files].forEach((file, i) => {
+                const image = handleFile(file);
+                console.log(uploadAction.src[i]);
+                image.srcElem = (
+                    <img src={uploadAction.src[i]} alt={file.name} />
+                );
+                console.log(image);
                 fileList.push(image);
             });
 
@@ -105,7 +105,7 @@ function imgReducer(
             // its only when setting the  state that it just stops working
             // will need to provide more context to gpt i guess since it's been providing solutions   but none of which have really worked
 
-            return fileList;
+            return [...uploadState, ...fileList];
         }
         case "SELECT_DITHER": {
             const selectAction = action as SelectAction;
@@ -129,21 +129,19 @@ function imgReducer(
 export default function useUploadedFiles(initialImages: UploadedImage[]) {
     const [imgState, dispatch] = useReducer(imgReducer, [...initialImages]);
 
-    // imgState:
-    // [
-    //     {
-    //         file: File,
-    //         dither: Boolean,
-    //         ditheredFile: File || undefined,
-    //     },
-    //     ...
-    // ];
-
     const uploadHandler = useCallback((files: FileList) => {
-        dispatch({
-            type: "UPLOAD_FILES",
-            files: files,
-        });
+        const srcPromises = Array.from(files).map(previewFile);
+        console.log(srcPromises);
+
+        Promise.all(srcPromises)
+            .then((srcList) => {
+                dispatch({
+                    type: "UPLOAD_FILES",
+                    files: files,
+                    src: srcList,
+                });
+            })
+            .catch((error) => console.error("Error uploading files", error));
     }, []);
 
     const selectHandler = useCallback((id: string, value: boolean) => {

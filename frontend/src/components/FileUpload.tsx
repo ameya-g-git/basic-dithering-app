@@ -34,7 +34,7 @@ export default function FileUpload({
             e.stopPropagation();
             const dt = e.dataTransfer;
             const files = dt!.files;
-            console.log("what");
+            console.log(files);
             onUpload(files);
         },
         [onUpload]
@@ -64,7 +64,9 @@ export default function FileUpload({
                             multiple
                             accept="image/*"
                             hidden
-                            // onChange={handleFiles(this.files)}
+                            onChange={(e) =>
+                                onUpload(e.target.files as FileList)
+                            }
                         />
                         <label
                             htmlFor="fileElem"
