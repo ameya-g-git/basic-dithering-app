@@ -1,17 +1,26 @@
-import { useState } from "react";
 import FileUpload from "./components/FileUpload";
 import useUploadedFiles from "./hooks/useUploadedFiles";
 import "./output.css";
+import ImageInput from "./components/ImageInput";
 
 function App() {
-    const [imgState, uploadHandler, selectHandler, ditherHandler] =
-        useUploadedFiles([]);
+    const [imgState, uploadHandler, selectHandler, ditherHandler] = useUploadedFiles([]);
 
     return (
-        <main className="flex flex-col items-center w-full gap-4 p-8">
+        <main className="flex flex-col items-center w-full h-screen gap-4 p-8">
             <h1 className="font-bold">basic-dithering-app</h1>
             <FileUpload onUpload={uploadHandler} />
-            {imgState.map((image) => image.srcElem)}
+            <form className="flex flex-row justify-between w-full gap-4 mb-16 h-2/5" id="dither-form">
+                {imgState.map((image) => (
+                    <ImageInput
+                        key={image.id}
+                        id={image.id}
+                        formId="dither-form"
+                        image={image}
+                        onChange={selectHandler}
+                    />
+                ))}
+            </form>
         </main>
     );
 }
