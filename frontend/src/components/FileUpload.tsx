@@ -43,7 +43,7 @@ export default function FileUpload({ onUpload }: FileUploadType) {
     );
 
     return (
-        <div className="flex flex-col items-stretch w-full h-3/5">
+        <div className="flex flex-col items-stretch w-full h-2/5">
             <div
                 id="drag-area"
                 className={dragAreaStyles}
