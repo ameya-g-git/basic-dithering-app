@@ -102,7 +102,14 @@ function imgReducer(state: UploadedImage[] | undefined, action: UploadAction | D
                 dither: selectAction.value,
             };
 
-            break;
+            return newState;
+        }
+        case "DITHER_FILES": {
+            const ditherState = state as UploadedImage[];
+            for (const image of ditherState) {
+                console.log(image.dither);
+            }
+            return state;
         }
         default: {
             return state;
