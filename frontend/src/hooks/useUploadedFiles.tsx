@@ -1,11 +1,10 @@
-import { debounce } from "lodash";
 import { nanoid } from "nanoid";
-import { act, ReactElement, useCallback, useReducer } from "react";
+import { useCallback, useReducer } from "react";
 
-interface UploadedImage {
+export interface UploadedImage {
     id: string;
-    img: File;
-    srcElem: ReactElement | undefined;
+    file: File;
+    src: string;
     dither: boolean;
     ditheredImage: File | undefined;
 }
@@ -26,20 +25,21 @@ interface SelectAction extends Action {
 
 interface DitherAction extends Action {}
 
-type UploadedFilesHookReturn = [
-    UploadedImage[],
-    (files: FileList) => void,
-    (id: string, value: boolean) => void,
-    () => void
-];
+type uploadHandlerType = (files: FileList) => void;
+
+export type selectHandlerType = (id: string, value: boolean) => void;
+
+type ditherHandlerType = () => void;
+
+type UploadedFilesHookReturn = [UploadedImage[], uploadHandlerType, selectHandlerType, ditherHandlerType];
 
 async function previewFile(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onloadend = function () {
-            if (typeof reader.result === "string") {
-                resolve(reader.result);
+            if (typeof this.result === "string") {
+                resolve(this.result);
             } else {
                 reject(new Error("Failed to read file."));
             }
@@ -57,8 +57,8 @@ function handleFile(file: File) {
 
     const image: UploadedImage = {
         id: nanoid(),
-        img: file,
-        srcElem: undefined,
+        file: file,
+        src: "",
         dither: true,
         ditheredImage: undefined,
     };
@@ -78,10 +78,7 @@ function handleFile(file: File) {
     // Used with backend to upload files to server
 }
 
-function imgReducer(
-    state: UploadedImage[] | undefined,
-    action: UploadAction | DitherAction | SelectAction
-) {
+function imgReducer(state: UploadedImage[] | undefined, action: UploadAction | DitherAction | SelectAction) {
     switch (action.type) {
         case "UPLOAD_FILES": {
             const uploadState = state as UploadedImage[];
@@ -90,9 +87,7 @@ function imgReducer(
 
             [...uploadAction.files].forEach((file, i) => {
                 const image = handleFile(file);
-                image.srcElem = (
-                    <img src={uploadAction.src[i]} alt={file.name} />
-                );
+                image.src = uploadAction.src[i];
                 fileList.push(image);
             });
 
@@ -100,9 +95,7 @@ function imgReducer(
         }
         case "SELECT_DITHER": {
             const selectAction = action as SelectAction;
-            const imageIndex = state!.findIndex(
-                (img) => img.id === selectAction.id
-            );
+            const imageIndex = state!.findIndex((img) => img.id === selectAction.id);
             const newState = state ? [...state] : [];
             newState[imageIndex] = {
                 ...newState[imageIndex],
@@ -122,7 +115,6 @@ export default function useUploadedFiles(initialImages: UploadedImage[]) {
 
     const uploadHandler = useCallback((files: FileList) => {
         const srcPromises = Array.from(files).map(previewFile);
-        console.log(srcPromises);
 
         Promise.all(srcPromises)
             .then((srcList) => {
@@ -149,12 +141,7 @@ export default function useUploadedFiles(initialImages: UploadedImage[]) {
         });
     }, []);
 
-    return [
-        imgState,
-        uploadHandler,
-        selectHandler,
-        ditherHandler,
-    ] as UploadedFilesHookReturn;
+    return [imgState, uploadHandler, selectHandler, ditherHandler] as UploadedFilesHookReturn;
     // TODO: handle converting drag uploads into FileLists   its too convoluted to try and handle this all in this module + i think i could also honestly just define it in its own file as well
     // TODO: create const ditherHandler = useCallback(); // this function should accept the list of images as from uploadHandler and add the dithered images to imageState in the ditheredImage key
 }
