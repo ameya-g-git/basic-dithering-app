@@ -15,7 +15,15 @@ export default function ImageInput({ id, formId, image, onChange }: ImageInputTy
             <img className="h-full p-4" src={image.src} alt={image.file.name} />
 
             <label htmlFor={id}>want to dither this image?</label>
-            <select value="N" onChange={(e) => onChange(id, e.target.value === "Y")} className="" form={formId} id={id}>
+            <select
+                value={image.dither ? "Y" : "N"}
+                onChange={(e) => {
+                    onChange(id, e.target.value === "Y");
+                }}
+                className=""
+                form={formId}
+                id={id}
+            >
                 <option value="Y">dither it!</option>
                 <option value="N">don't dither it.</option>
             </select>
