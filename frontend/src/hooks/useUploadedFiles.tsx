@@ -63,8 +63,6 @@ function handleFile(file: File) {
         ditheredImage: undefined,
     };
 
-    console.log(image);
-
     return image;
 
     // fetch(url, {
@@ -92,18 +90,11 @@ function imgReducer(
 
             [...uploadAction.files].forEach((file, i) => {
                 const image = handleFile(file);
-                console.log(uploadAction.src[i]);
                 image.srcElem = (
                     <img src={uploadAction.src[i]} alt={file.name} />
                 );
-                console.log(image);
                 fileList.push(image);
             });
-
-            // TODO: for some reason, the asynchronous code is messing things up and causing imageState to be  fully empty
-            // its strange though, since when i console.log(fileList), it shows a properly populated list with everything resolved
-            // its only when setting the  state that it just stops working
-            // will need to provide more context to gpt i guess since it's been providing solutions   but none of which have really worked
 
             return [...uploadState, ...fileList];
         }

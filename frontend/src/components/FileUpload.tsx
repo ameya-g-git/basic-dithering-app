@@ -51,7 +51,7 @@ export default function FileUpload({
                 onDrop={(e) => {
                     dragLeaveHandler(e as unknown as DragEvent);
                     dropHandler(e as unknown as DragEvent);
-                }} // TODO: something is rerendering which causes uploadHandler to run twice on the same inputs... peculiar
+                }}
             >
                 <img src={upload} alt="upload" className="w-32 -m-4" />
                 <span className="flex flex-col *:-m-1 items-center">
