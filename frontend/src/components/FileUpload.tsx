@@ -1,17 +1,16 @@
 import { useCallback, useState } from "react";
 import upload from "../assets/upload.png";
 import clsx from "clsx";
-import useUploadedFiles from "../hooks/useUploadedFiles";
 
-export default function FileUpload({
-    onUpload,
-}: {
+interface FileUploadType {
     onUpload: (files: FileList) => void;
-}) {
+}
+
+export default function FileUpload({ onUpload }: FileUploadType) {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
 
     const dragAreaStyles = clsx({
-        "transition-all flex flex-col bg-white items-center justify-center gap-2 border-2 border-dashed rounded-3xl h-3/5 border-slate-700":
+        "transition-all flex flex-col bg-white items-center justify-center gap-2 border-2 border-dashed rounded-3xl h-full border-slate-700":
             true,
         "brightness-75": isDraggedOver,
     });
@@ -34,14 +33,17 @@ export default function FileUpload({
             e.stopPropagation();
             const dt = e.dataTransfer;
             const files = dt!.files;
-            console.log(files);
-            onUpload(files);
+            if (files.length > 0) {
+                onUpload(files);
+            } else {
+                console.error("Error in uploading file, try uploading a file saved on your computer");
+            }
         },
         [onUpload]
     );
 
     return (
-        <div className="flex flex-col items-stretch w-full h-screen">
+        <div className="flex flex-col items-stretch w-full h-3/5">
             <div
                 id="drag-area"
                 className={dragAreaStyles}
@@ -64,14 +66,9 @@ export default function FileUpload({
                             multiple
                             accept="image/*"
                             hidden
-                            onChange={(e) =>
-                                onUpload(e.target.files as FileList)
-                            }
+                            onChange={(e) => onUpload(e.target.files as FileList)}
                         />
-                        <label
-                            htmlFor="fileElem"
-                            className="font-bold text-blue-500 underline cursor-pointer"
-                        >
+                        <label htmlFor="fileElem" className="font-bold text-blue-500 underline cursor-pointer">
                             browse!
                         </label>
                     </h2>
