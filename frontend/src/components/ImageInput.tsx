@@ -9,10 +9,10 @@ interface ImageInputType {
 
 export default function ImageInput({ id, formId, image, onChange }: ImageInputType) {
     return (
-        <div className="flex flex-col items-center w-full" id={`${image.file.name}-${id}`}>
-            <h3 className="font-bold">{image.file.name}</h3>
+        <div className="flex flex-col items-center w-full" id={`${image.fileName}-${id}`}>
+            <h3 className="font-bold">{image.fileName}</h3>
 
-            <img className="h-full p-4" src={image.src} alt={image.file.name} />
+            <img className="w-auto max-h-full p-4" src={image.src} alt={image.fileName} />
 
             <label htmlFor={id}>want to dither this image?</label>
             <select

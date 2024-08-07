@@ -10,6 +10,8 @@ interface FileUploadType {
 export default function FileUpload({ onUpload, className }: FileUploadType) {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
 
+    // TODO: create a little modal for when the file size is too big, don't push it to imgState either
+
     const dragAreaStyles = clsx({
         "transition-all flex flex-col bg-white items-center justify-center gap-2 border-2 border-dashed rounded-3xl h-full border-slate-700":
             true,

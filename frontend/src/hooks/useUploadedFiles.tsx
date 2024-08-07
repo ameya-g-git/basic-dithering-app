@@ -3,7 +3,7 @@ import { useCallback, useReducer } from "react";
 
 export interface UploadedImage {
     id: string;
-    file: File;
+    fileName: string;
     src: string;
     dither: boolean;
     ditheredImage: File | undefined;
@@ -57,11 +57,13 @@ function handleFile(file: File) {
 
     const image: UploadedImage = {
         id: nanoid(),
-        file: file,
+        fileName: file.name,
         src: "",
         dither: true,
         ditheredImage: undefined,
     };
+
+    console.log(image);
 
     return image;
 
@@ -149,6 +151,5 @@ export default function useUploadedFiles(initialImages: UploadedImage[]) {
     }, []);
 
     return [imgState, uploadHandler, selectHandler, ditherHandler] as UploadedFilesHookReturn;
-    // TODO: handle converting drag uploads into FileLists   its too convoluted to try and handle this all in this module + i think i could also honestly just define it in its own file as well
     // TODO: create const ditherHandler = useCallback(); // this function should accept the list of images as from uploadHandler and add the dithered images to imageState in the ditheredImage key
 }
