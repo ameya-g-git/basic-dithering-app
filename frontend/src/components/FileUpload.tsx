@@ -4,9 +4,10 @@ import clsx from "clsx";
 
 interface FileUploadType {
     onUpload: (files: FileList) => void;
+    className: string;
 }
 
-export default function FileUpload({ onUpload }: FileUploadType) {
+export default function FileUpload({ onUpload, className }: FileUploadType) {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
 
     const dragAreaStyles = clsx({
@@ -43,7 +44,7 @@ export default function FileUpload({ onUpload }: FileUploadType) {
     );
 
     return (
-        <div className="flex flex-col items-stretch w-full h-2/5">
+        <div className={`flex flex-col items-stretch w-full ${className}`}>
             <div
                 id="drag-area"
                 className={dragAreaStyles}
