@@ -11,6 +11,11 @@ def dither_images():
     try:
         form_data = request.form.get('images')
 
+        # TODO: figure out how to parse an image from the incoming input
+        # TODO: also figure out how to send the image back once the image is dithered  
+            # would an await statement literally just   wait until the response is sent   that makes sense right
+        # TODO: from there its literally just  previewing the image and then letting the user download and presto bango
+
         data = []
 
         if not form_data:
