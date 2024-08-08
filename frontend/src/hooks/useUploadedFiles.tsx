@@ -29,9 +29,7 @@ type uploadHandlerType = (files: FileList) => void;
 
 export type selectHandlerType = (id: string, value: boolean) => void;
 
-type ditherHandlerType = () => void;
-
-type UploadedFilesHookReturn = [UploadedImage[], uploadHandlerType, selectHandlerType, ditherHandlerType];
+type UploadedFilesHookReturn = [UploadedImage[], uploadHandlerType, selectHandlerType];
 
 async function previewFile(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -66,18 +64,6 @@ function handleFile(file: File) {
     console.log(image);
 
     return image;
-
-    // fetch(url, {
-    //     method: "POST",
-    //     body: formData,
-    // })
-    //     .then(() => {
-    //         /* Done. Inform the user */
-    //     })
-    //     .catch(() => {
-    //         /* Error. Inform the user */
-    //     });
-    // Used with backend to upload files to server
 }
 
 function imgReducer(state: UploadedImage[] | undefined, action: UploadAction | DitherAction | SelectAction) {
@@ -105,13 +91,6 @@ function imgReducer(state: UploadedImage[] | undefined, action: UploadAction | D
             };
 
             return newState;
-        }
-        case "DITHER_FILES": {
-            const ditherState = state as UploadedImage[];
-            for (const image of ditherState) {
-                console.log(image.dither);
-            }
-            return state;
         }
         default: {
             return state;
@@ -144,12 +123,6 @@ export default function useUploadedFiles(initialImages: UploadedImage[]) {
         });
     }, []);
 
-    const ditherHandler = useCallback(() => {
-        dispatch({
-            type: "DITHER_FILES",
-        });
-    }, []);
-
-    return [imgState, uploadHandler, selectHandler, ditherHandler] as UploadedFilesHookReturn;
+    return [imgState, uploadHandler, selectHandler] as UploadedFilesHookReturn;
     // TODO: create const ditherHandler = useCallback(); // this function should accept the list of images as from uploadHandler and add the dithered images to imageState in the ditheredImage key
 }
