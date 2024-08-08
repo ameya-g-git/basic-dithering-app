@@ -1,6 +1,6 @@
 class UploadedImage:
     def __init__(self, image_id, file_name, src, dither, dithered_image) -> None:
-        self.id : str = image_id
+        self.image_id : str = image_id
         self.file_name : str = file_name
         self.src : str = src
         self.dither : bool = dither
@@ -8,7 +8,7 @@ class UploadedImage:
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'image_id': self.image_id,
             'file_name': self.file_name,
             'src': self.src,
             'dither': self.dither,
