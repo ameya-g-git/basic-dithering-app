@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify, request
 from .models import UploadedImage, UploadedImageList
 
+uploaded_images = UploadedImageList([])
+
 main = Blueprint('main', __name__)
 
 @main.route("/", methods=['POST'])
@@ -9,8 +11,6 @@ def dither_images():
 
     if not data:
         return jsonify({'error': 'Invalid upload'}), 400
-    
-    images = UploadedImageList([])
 
     for image in data:
         uploadedImage = UploadedImage(
@@ -20,6 +20,10 @@ def dither_images():
             dither=image.dither,
             dithered_image=image.dithered_image
         )
-        images.append(uploadedImage)
+        uploaded_images.append(uploadedImage)
 
-    return jsonify(images.to_dict_list()), 201
+    return jsonify(uploaded_images.to_dict_list()), 201
+
+@main.route("/", methods=['GET'])
+def get_images():
+    return jsonify(uploaded_images.to_dict_list()), 200
