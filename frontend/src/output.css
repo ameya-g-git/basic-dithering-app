@@ -734,10 +734,10 @@ select {
   background-color: rgb(211, 255, 249)
 }
 
-img {
-  pointer-events: auto;
-  -webkit-user-drag: auto
-}
+/* img {
+    pointer-events: auto;
+    -webkit-user-drag: auto
+} */
 
 .\*\:-m-1 > * {
   margin: -0.25rem;
