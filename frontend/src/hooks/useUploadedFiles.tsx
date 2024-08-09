@@ -124,5 +124,4 @@ export default function useUploadedFiles(initialImages: UploadedImage[]) {
     }, []);
 
     return [imgState, uploadHandler, selectHandler] as UploadedFilesHookReturn;
-    // TODO: create const ditherHandler = useCallback(); // this function should accept the list of images as from uploadHandler and add the dithered images to imageState in the ditheredImage key
 }

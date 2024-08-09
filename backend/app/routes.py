@@ -19,7 +19,6 @@ def upload_images():
 
         # TODO: also figure out how to send the image back once the image is dithered  
             # would an await statement literally just   wait until the response is sent   that makes sense right
-        # TODO: from there its literally just  previewing the image and then letting the user download and presto bango
 
         data = []
 
@@ -53,6 +52,11 @@ def get_images():
 
 @main.route("/images", methods=['GET'])
 def dither_images():
+    dithered_images = []
+
     for image in uploaded_images.images:
         if image.dither:
-            return jsonify({"shape": (floyd_steinberg(image.src))}), 200
+            dithered_image = floyd_steinberg(image)
+            dithered_images.append(dithered_image)
+    
+    return jsonify(dithered_images), 200
