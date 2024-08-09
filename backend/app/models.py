@@ -1,8 +1,10 @@
+from PIL import Image
+
 class UploadedImage:
-    def __init__(self, image_id, file_name, src, dither, dithered_image) -> None:
+    def __init__(self, image_id, file_name, src : Image, dither, dithered_image) -> None:
         self.image_id : str = image_id
         self.file_name : str = file_name
-        self.src : str = src
+        self.src : Image = src
         self.dither : bool = dither
         self.dithered_image = dithered_image # TODO: add type for this ?? idk ??
 
@@ -10,7 +12,7 @@ class UploadedImage:
         return {
             'image_id': self.image_id,
             'file_name': self.file_name,
-            'src': self.src,
+            'src': [self.src.format, self.src.size] ,
             'dither': self.dither,
             'dithered_image': self.dithered_image,
         }
