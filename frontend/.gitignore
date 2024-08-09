@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 
 # Ignore Python bytecode files
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
