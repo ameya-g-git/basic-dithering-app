@@ -3,7 +3,7 @@ from .models import UploadedImage, UploadedImageList
 import json
 from io import BytesIO
 from json import loads
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from PIL import Image
 
 from .utils.floydsteinberg import floyd_steinberg
@@ -16,9 +16,6 @@ main = Blueprint('main', __name__)
 def upload_images():
     try:
         form_data = request.form.get('images')
-
-        # TODO: also figure out how to send the image back once the image is dithered  
-            # would an await statement literally just   wait until the response is sent   that makes sense right
 
         data = []
 
@@ -56,7 +53,15 @@ def dither_images():
 
     for image in uploaded_images.images:
         if image.dither:
-            dithered_image = floyd_steinberg(image)
+            dithered_image = floyd_steinberg(image.src)
             dithered_images.append(dithered_image)
     
-    return jsonify(dithered_images), 200
+    img = dithered_images[0]
+    
+    mem_file = BytesIO()
+    img.save(mem_file, format="PNG")
+    data_url_bytes = b64encode(mem_file.getvalue())
+    data_url_str = data_url_bytes.decode('utf-8')
+    data_url = f"data:image/png;base64,{data_url_str}"
+
+    return f'<img src="{data_url}" /> <p>{data_url}</p>'
