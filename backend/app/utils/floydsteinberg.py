@@ -44,7 +44,7 @@ def floyd_steinberg(img : Image):
             err = old_val - new_val
 
             if ic < width - 1:
-                img_arr[ir, ic] += (err / 16) * 7
+                img_arr[ir, ic+1] += (err / 16) * 7
             if ir < height - 1:
                 if ic > 0:
                     fwd_arr[ic-1] += (err / 16) * 3
@@ -54,6 +54,9 @@ def floyd_steinberg(img : Image):
         if ir < height - 1:
             img_arr[ir+1] += fwd_arr 
 
+        fwd_arr = np.zeros(width)
+        
+    img_arr = np.clip(img_arr, 0, 1)
     carr = np.array(img_arr/np.max(img_arr, axis=(0,1)) * 255, dtype=np.uint8)
     return Image.fromarray(carr)
 
