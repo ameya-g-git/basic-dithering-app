@@ -1,11 +1,10 @@
 from flask import Blueprint, jsonify, request
-from .models import UploadedImage, UploadedImageList
-import json
 from io import BytesIO
 from json import loads
 from base64 import b64decode, b64encode
 from PIL import Image
 
+from .models import UploadedImage, UploadedImageList
 from .utils.floydsteinberg import floyd_steinberg
 
 uploaded_images = UploadedImageList([])
@@ -39,7 +38,7 @@ def upload_images():
             )
             uploaded_images.push(uploaded_image)
 
-        return jsonify({"hi": "bye"}), 201
+        return jsonify({"upload": "Succesful"}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -51,17 +50,26 @@ def get_images():
 def dither_images():
     dithered_images = []
 
+    if len(uploaded_images.images) == 0:
+        return jsonify({"error": "No images to dither"}), 500
+
     for image in uploaded_images.images:
         if image.dither:
+            # apply dithering algorithm
             dithered_image = floyd_steinberg(image.src)
-            dithered_images.append(dithered_image)
-    
-    img = dithered_images[0]
-    
-    mem_file = BytesIO()
-    img.save(mem_file, format="PNG")
-    data_url_bytes = b64encode(mem_file.getvalue())
-    data_url_str = data_url_bytes.decode('utf-8')
-    data_url = f"data:image/png;base64,{data_url_str}"
+            
+            # save image to in-memory file and encode it into a base-64 string
+            mem_file = BytesIO()
+            dithered_image.save(mem_file, format="PNG")
+            data_url_bytes = b64encode(mem_file.getvalue())
+            data_url_str = data_url_bytes.decode('utf-8')
+            data_url = f"data:image/png;base64,{data_url_str}"
 
-    return f'<img src="{data_url}" /> <p>{data_url}</p>'
+            dithered_image_json = {
+                "name": f"{image.file_name.split('.')[0]}_dither_fs",
+                "data": data_url,
+            }
+
+            dithered_images.append(dithered_image_json)
+    
+    return jsonify(dithered_images), 201
