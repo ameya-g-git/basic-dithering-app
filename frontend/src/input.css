@@ -26,6 +26,16 @@ select {
 
 }
 
+.rendering-auto { 
+    image-rendering: auto; 
+}
+.rendering-crisp-edges { 
+    image-rendering: crisp-edges; 
+}
+.rendering-pixelated { 
+    image-rendering: pixelated; 
+}
+
 /* img {
     pointer-events: auto;
     -webkit-user-drag: auto
