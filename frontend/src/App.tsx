@@ -52,13 +52,26 @@ function App() {
         // use JSZip to zip all the files together  and make the button a download as per  what online says
     }
 
+    function dataURLtoUint8Array(data: string) {
+        const base64 = data.split(",")[1];
+        const binaryString = atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        return bytes;
+    }
+
     useEffect(() => {
         if (ditheredImages.length > 0) {
             const zip = JSZip();
-            let zipUrl;
 
             for (const image of ditheredImages) {
-                zip.file(`${image.name}.png`, image.data);
+                const binaryData = dataURLtoUint8Array(image.data);
+                zip.file(`${image.name}.png`, binaryData);
             }
 
             zip.generateAsync({ type: "blob" }).then((blob) => {
