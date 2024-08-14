@@ -7,6 +7,13 @@ interface FileUploadType {
     className: string;
 }
 
+/**
+ * Displays a rectangular area that accepts dropping files in, as well as picking a file via your system's default file manager
+ * @param onUpload | A handler function to process images that have been uploaded via the component
+ * @param className | Additional Tailwind classes to make styling the component easier
+ * @returns | The JSX that displays the drag-and-drop uploader
+ */
+
 export default function FileUpload({ onUpload, className }: FileUploadType) {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
 
@@ -35,9 +42,10 @@ export default function FileUpload({ onUpload, className }: FileUploadType) {
             e.preventDefault();
             e.stopPropagation();
             const dt = e.dataTransfer;
-            const files = dt!.files;
+            const files = dt!.files; // get files from drag event
             if (files.length > 0) {
-                onUpload(files);
+                // note to self: add the image file validation logic here
+                onUpload(files); // handle file upload via a handler function prop
             } else {
                 console.error("Error in uploading file, try uploading a file saved on your computer");
             }

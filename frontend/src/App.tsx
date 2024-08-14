@@ -46,13 +46,14 @@ function App() {
                 setLoading(false);
             })
             .catch((e) => console.error(e));
-
-        // TODO: add the GET from /images request here, create a <Loading /> component, hold it in a state value, and
-        // once the request resolves, remove the loader, and append to a new state value the uploaded image previews
-        // use JSZip to zip all the files together  and make the button a download as per  what online says
     }
 
-    function dataURLtoUint8Array(data: string) {
+    /**
+     * Converts a data URL to a UInt8Array for ease of downloading via JSZip
+     * @param data | data URL of a file
+     * @returns {Uint8Array} | UInt8Array encoded version of the data URL
+     */
+    function dataURLtoUint8Array(data: string): Uint8Array {
         const base64 = data.split(",")[1];
         const binaryString = atob(base64);
         const len = binaryString.length;
@@ -61,6 +62,7 @@ function App() {
         for (let i = 0; i < len; i++) {
             bytes[i] = binaryString.charCodeAt(i);
         }
+        console.log(String(bytes));
 
         return bytes;
     }
