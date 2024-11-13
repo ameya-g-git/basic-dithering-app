@@ -62,7 +62,6 @@ function App() {
         for (let i = 0; i < len; i++) {
             bytes[i] = binaryString.charCodeAt(i);
         }
-        console.log(String(bytes));
 
         return bytes;
     }
